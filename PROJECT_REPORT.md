@@ -13,7 +13,7 @@ The rapid growth of digital news has made manual categorization of articles inef
 
 The workflow covers the complete machine learning lifecycle: from raw data collection and exploratory analysis, through text preprocessing and feature extraction, to model training, evaluation, comparison, and finally the deployment of a user-facing prediction system with a frontend interface.
 
-**Dataset used:** AG News dataset (via HuggingFace `sh0416/ag_news`) and a local news classification dataset (`news_classification_dataset.csv`, 30,000 articles).
+**Dataset used:** AG News dataset (via HuggingFace `sh0416/ag_news`): 120,000 training and 7,600 test articles, perfectly balanced across the four classes.
 
 ## 2. Team Contribution Breakdown
 
@@ -167,8 +167,18 @@ User receives predicted news category
 | File | Description |
 |------|-------------|
 | `01_EDA.ipynb` | Exploratory Data Analysis notebook (Member 1) |
-| `news_classification_dataset.csv` | Local news dataset — 30,000 articles, 15 columns |
+| `02_Text Preprocessing.ipynb` | Initial text-cleaning experiments (Member 2) |
+| `03_Feature_Extraction.ipynb` | Final preprocessing, BoW and TF-IDF vectorizers (Member 2) |
+| `04_Model_Training_Evaluation.ipynb` | Model training, tuning and evaluation (Member 3) |
+| `05_Model_Comparison_Prediction.ipynb` | Model comparison, selection and prediction test (Member 4) |
+| `src/preprocess.py`, `src/predict.py` | Shared preprocessing and the `predict(text)` pipeline |
+| `app/` | Flask web application and frontend (Member 5) |
+| `models/` | Saved best model, TF-IDF vectorizer, label encoder |
+| `reports/` | Evaluation results and charts |
+| `README.md` | Setup, usage and results summary |
 | `PROJECT_REPORT.md` | This report |
+
+**Final results:** the selected model is a calibrated LinearSVC on TF-IDF (unigram + bigram) features, with 92.36% accuracy and 0.923 weighted F1 on the 7,600-article test set (Logistic Regression 92.00%, Naive Bayes 90.76%, Random Forest 89.89%, Gradient Boosting 89.04%).
 
 ## 6. Conclusion
 
