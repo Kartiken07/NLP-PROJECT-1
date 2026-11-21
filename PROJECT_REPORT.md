@@ -1,195 +1,350 @@
 # News Classification using NLP — Project Report
 
-**Course:** Natural Language Processing (NLP)
-**Project:** Automated News Article Classification
-**Team Size:** 5 Members
+**Course:** Natural Language Processing (NLP)  
+**Project:** Automated News Article Classification  
+**Team Size:** 5 Members  
 **Report Date:** 19 November 2026
 
 ---
 
 ## 1. Introduction
 
-The rapid growth of digital news has made manual categorization of articles inefficient and error-prone. This project focuses on building an end-to-end Natural Language Processing (NLP) pipeline that automatically classifies news articles into predefined categories such as World, Sports, Business, and Sci/Tech.
+The rapid growth of digital news has made manual categorization of articles inefficient and error-prone. This project focuses on building an end-to-end Natural Language Processing (NLP) pipeline that automatically classifies news articles into four predefined categories: **World, Sports, Business, and Sci/Tech**.
 
-The workflow covers the complete machine learning lifecycle: from raw data collection and exploratory analysis, through text preprocessing and feature extraction, to model training, evaluation, comparison, and finally the deployment of a user-facing prediction system with a frontend interface.
+The project covers the complete machine-learning lifecycle: dataset exploration, text preprocessing, feature extraction, model training and evaluation, model comparison and selection, reusable inference, and integration with a user-facing web application.
 
-**Dataset used:** AG News dataset (via HuggingFace `sh0416/ag_news`): 120,000 training and 7,600 test articles, perfectly balanced across the four classes.
+**Dataset:** AG News dataset via Hugging Face (`sh0416/ag_news`) containing **120,000 training articles** and **7,600 test articles**, balanced across the four target classes.
+
+---
 
 ## 2. Team Contribution Breakdown
 
-| Member | Responsibility Area |
-|--------|---------------------|
-| Member 1 | Dataset Collection & Exploratory Data Analysis |
-| Member 2 | Text Preprocessing & Feature Extraction |
-| Member 3 | Model Building & Model Evaluation |
-| Member 4 | Model Comparison & Selection + Prediction System |
-| Member 5 | Frontend Development + Final Deployment & Documentation |
+| Team Member | Primary Responsibility |
+| --- | --- |
+| **Kartiken Sharma** | Dataset Collection & Exploratory Data Analysis |
+| **Huwaid Siddqui** | Text Preprocessing & Feature Extraction |
+| **Naman Chanana** | Model Building & Model Evaluation |
+| **Mohit Kumar Yadav** | Model Comparison, Selection & Prediction System |
+| **Ishika Garg** | Frontend Development, Integration & Documentation |
+
+---
 
 ## 3. Detailed Contributions
 
-### 3.1 Member 1 — Dataset Collection & Exploratory Data Analysis
+### 3.1 Kartiken Sharma — Dataset Collection & Exploratory Data Analysis
 
-**Deliverables:**
+**Primary responsibilities:**
 
-- Collected and loaded the AG News dataset using `datasets.load_dataset("sh0416/ag_news")` (train/test splits).
-- Converted HuggingFace dataset objects into pandas DataFrames for analysis.
-- Performed structural analysis: shape inspection, data types, column profiling, and `describe()` statistics.
-- Mapped numeric labels to category names: 1 → World, 2 → Sports, 3 → Business, 4 → Sci/Tech.
-- Combined title and description into a unified text column.
-- Conducted data quality checks: missing value detection, duplicate row detection, duplicate text detection.
-- Performed statistical and visual analysis:
-  - Category distribution (countplot) — verified class balance.
-  - Word count distribution (histogram + KDE).
-  - Article length by category (boxplot).
-  - Top-20 most frequent words (bar chart) after basic tokenization with regex.
+- Loaded the AG News dataset using `datasets.load_dataset("sh0416/ag_news")`.
+- Converted the Hugging Face dataset objects into pandas DataFrames for analysis.
+- Performed structural analysis including dataset shape, data types, column profiling, and descriptive statistics.
+- Mapped numeric labels to the four news categories:
+  - 1 → World
+  - 2 → Sports
+  - 3 → Business
+  - 4 → Sci/Tech
+- Combined article titles and descriptions into a unified text representation.
+- Performed data-quality checks including missing-value detection, duplicate-row detection, and duplicate-text analysis.
+- Conducted exploratory statistical and visual analysis:
+  - category distribution
+  - word-count distribution
+  - article length by category
+  - frequently occurring words
 
-**Tools/Libraries:** pandas, numpy, matplotlib, seaborn, collections.Counter, re, datasets
+**Tools/Libraries:** pandas, NumPy, Matplotlib, Seaborn, `collections.Counter`, `re`, Hugging Face Datasets
 
 **Key file:** `01_EDA.ipynb`
 
-### 3.2 Member 2 — Text Preprocessing & Feature Extraction
+**Outcome:** Established the analytical understanding of the AG News dataset and verified its structure, quality, and class distribution before preprocessing and modelling.
 
-**Responsibilities:**
+---
 
-- Designed and implemented the text cleaning pipeline:
-  - Lowercasing
-  - Removal of HTML tags, URLs, and special characters
-  - Tokenization
-  - Stopword removal
-  - Lemmatization / stemming
-  - Handling of empty or malformed texts
-- Applied the preprocessing pipeline consistently to both train and test sets.
-- Performed feature extraction using multiple vectorization strategies:
+### 3.2 Huwaid Siddqui — Text Preprocessing & Feature Extraction
+
+**Primary responsibilities:**
+
+- Designed and implemented the text-cleaning pipeline:
+  - lowercasing
+  - HTML-tag removal
+  - URL removal
+  - special-character cleaning
+  - tokenization
+  - stopword removal
+  - Porter stemming
+  - handling of empty or malformed text
+- Applied a consistent preprocessing pipeline to both training and test data.
+- Implemented the feature representations used by the classical machine-learning models:
   - Bag of Words (BoW)
-  - TF-IDF Vectorization (unigram + bigram)
-  - Word Embeddings (Word2Vec / TF-IDF weighted embeddings, as applicable)
-- Saved the fitted vectorizers and preprocessing artifacts for reuse during model training and inference.
+  - TF-IDF with unigram and bigram features
+- Prepared the fitted feature-extraction artifacts for reuse during model training and inference.
+- Helped ensure that the preprocessing used during inference remained consistent with the preprocessing used during training.
 
-**Tools/Libraries:** nltk, re, sklearn.feature_extraction.text (CountVectorizer, TfidfVectorizer), gensim (if applicable)
+**Tools/Libraries:** NLTK, `re`, scikit-learn `CountVectorizer`, scikit-learn `TfidfVectorizer`
 
-**Outcome:** Cleaned, vectorized representations of the news text ready for model consumption.
+**Key files:**
 
-### 3.3 Member 3 — Model Building & Model Evaluation
+- `02_Text Preprocessing.ipynb`
+- `03_Feature_Extraction.ipynb`
+- `src/preprocess.py`
 
-**Responsibilities:**
+**Outcome:** Produced clean and consistent numerical representations of the news text suitable for classical machine-learning classification.
 
-- Trained multiple classification models on the extracted features:
-  - Naive Bayes (MultinomialNB)
+---
+
+### 3.3 Naman Chanana — Model Building & Model Evaluation
+
+**Primary responsibilities:**
+
+- Built and evaluated multiple machine-learning classifiers using the extracted text features.
+- Evaluated configurations involving:
+  - Multinomial Naive Bayes
   - Logistic Regression
-  - Support Vector Machine (SVM / LinearSVC)
+  - Linear Support Vector Classification (LinearSVC)
   - Random Forest
-  - Gradient Boosting / XGBoost (as applicable)
-- Performed train/validation splitting with stratification to preserve class balance.
-- Conducted hyperparameter tuning using GridSearchCV / RandomizedSearchCV with cross-validation.
-- Evaluated each model using comprehensive metrics: Accuracy; Precision, Recall, F1-Score (per class and weighted average); Confusion Matrix; Classification Report.
-- Analyzed model behavior — misclassifications, class-wise performance, and error patterns.
+  - Histogram-based Gradient Boosting
+- Worked with both Bag-of-Words and TF-IDF feature representations where applicable.
+- Performed stratified train/validation evaluation to preserve class balance.
+- Evaluated model performance using:
+  - accuracy
+  - precision
+  - recall
+  - F1-score
+  - confusion matrices
+  - classification reports
+- Analyzed model behaviour and class-wise prediction performance.
+- Compared the effectiveness of different model and feature combinations.
 
-**Tools/Libraries:** scikit-learn (models, metrics, model_selection), matplotlib, seaborn
+**Tools/Libraries:** scikit-learn, NumPy, pandas, Matplotlib, Seaborn
 
-**Outcome:** Trained models with quantified performance across standard evaluation metrics.
+**Key file:** `04_Model_Training_Evaluation.ipynb`
 
-### 3.4 Member 4 — Model Comparison & Selection + Prediction System
+**Outcome:** Established the comparative performance of the candidate classifiers and provided the quantitative evidence required for final model selection.
 
-**Model Comparison & Selection:**
+---
 
-- Compiled all model results into a unified comparison table (Accuracy, Precision, Recall, F1).
-- Visualized model performance with bar charts and confusion matrices side by side.
-- Selected the best performing model based on overall F1-score and robustness across classes.
-- Justified the final model choice considering accuracy vs. speed vs. interpretability trade-offs.
+### 3.4 Mohit Kumar Yadav — Model Comparison, Selection & Prediction System
 
-**Prediction System:**
+#### Model Comparison & Selection
 
-- Built an end-to-end inference pipeline:
-  1. Raw text input
-  2. Preprocessing (reusing Member 2's pipeline)
-  3. Feature extraction (reusing the fitted vectorizer)
-  4. Prediction using the selected model
-  5. Output predicted category with confidence/probability scores
-- Serialized the final artifacts (model + vectorizer + label encoder) using joblib / pickle.
-- Created a reusable `predict(text)` function/script for programmatic access.
+**Primary responsibilities:**
 
-**Tools/Libraries:** scikit-learn, joblib, matplotlib, seaborn
+- Consolidated model results into a unified comparison of classification performance.
+- Compared candidate configurations using accuracy, weighted F1-score, inference behaviour, and practical model characteristics.
+- Visualized model performance using comparison plots and confusion matrices.
+- Selected **LinearSVC with TF-IDF features** as the strongest-performing configuration.
+- Considered the trade-off between predictive performance, inference speed, and model complexity.
 
-**Outcome:** A single best model and a functional prediction pipeline ready for integration.
+#### Prediction System
 
-### 3.5 Member 5 — Frontend Development + Final Deployment & Documentation
+- Built the reusable end-to-end inference flow:
 
-**Frontend Development:**
-
-- Designed and built a user-friendly web interface where users can:
-  - Paste a news article headline/body
-  - Click "Classify" to receive the predicted category
-  - View confidence score and model details
-- Ensured clean UI layout, responsive design, and intuitive UX.
-
-**Deployment:**
-
-- Exposed the prediction pipeline through a web framework (e.g., Flask / FastAPI).
-- Containerized or configured the application for local/demo deployment.
-- Managed environment dependencies and reproducibility (`requirements.txt`, virtual environment).
-
-**Documentation:**
-
-- Compiled this project report.
-- Documented setup/installation steps, usage instructions, and architecture overview.
-- Organized final repository structure and submission-ready materials.
-
-**Tools/Libraries:** Flask / FastAPI, HTML/CSS/JS (or Streamlit/Gradio), joblib
-
-**Outcome:** A working web application for news classification, fully documented and ready for demo.
-
-## 4. System Architecture (Overview)
-
-```
+```text
 Raw News Text
-      │
-      ▼
-[Member 1] Data Collection & EDA
-      │
-      ▼
-[Member 2] Preprocessing + Feature Extraction
-      │
-      ▼
-[Member 3] Model Training + Evaluation
-      │
-      ▼
-[Member 4] Model Comparison → Best Model → predict()
-      │
-      ▼
-[Member 5] Web Frontend + Deployment + Documentation
-      │
-      ▼
-User receives predicted news category
+      ↓
+Shared Preprocessing
+      ↓
+TF-IDF Vectorization
+      ↓
+Selected LinearSVC Model
+      ↓
+Probability Calibration
+      ↓
+Predicted News Category
 ```
+
+- Reused the same preprocessing logic used during model development.
+- Serialized and integrated the trained model and feature-extraction artifacts.
+- Developed reusable prediction functionality through `predict(text)`.
+- Integrated confidence/probability information into the inference output.
+
+**Tools/Libraries:** scikit-learn, joblib, NumPy
+
+**Key files:**
+
+- `05_Model_Comparison_Prediction.ipynb`
+- `src/predict.py`
+- `models/`
+
+**Outcome:** Produced the final deployable prediction pipeline using the best-performing model configuration.
+
+---
+
+### 3.5 Ishika Garg — Frontend Development, Integration & Documentation
+
+#### Frontend Development
+
+**Primary responsibilities:**
+
+- Developed the user-facing web interface for the news classifier.
+- Enabled users to:
+  - enter or paste news text
+  - submit it for classification
+  - view the predicted category
+  - inspect confidence/probability information and model details
+- Organized the interface to provide a simple and understandable classification workflow.
+
+#### Application Integration
+
+- Integrated the reusable prediction pipeline with the Flask backend.
+- Connected frontend requests to the trained model through the application's prediction endpoints.
+- Supported local/demo execution of the complete classification system.
+- Helped maintain dependency and setup information required to reproduce the application environment.
+
+#### Documentation
+
+- Organized project documentation and submission material.
+- Documented setup, installation, usage, architecture, and project results.
+- Helped organize the repository into a submission-ready structure.
+
+**Tools/Libraries:** Flask, HTML, CSS, JavaScript, joblib
+
+**Key directory:** `app/`
+
+**Outcome:** Delivered the user-facing layer of the classifier and helped package the technical work into a complete demonstrable project.
+
+---
+
+## 4. System Architecture
+
+```text
+                         AG News Dataset
+                               │
+                               ▼
+                  ┌─────────────────────────┐
+                  │ Dataset Analysis & EDA  │
+                  │    Kartiken Sharma      │
+                  └────────────┬────────────┘
+                               │
+                               ▼
+                ┌─────────────────────────────┐
+                │ Preprocessing & Features    │
+                │      Huwaid Siddqui         │
+                │ Porter Stem + BoW / TF-IDF  │
+                └──────────────┬──────────────┘
+                               │
+                               ▼
+                ┌─────────────────────────────┐
+                │ Model Training & Evaluation │
+                │       Naman Chanana         │
+                │  NB · LR · SVM · RF · HGB  │
+                └──────────────┬──────────────┘
+                               │
+                               ▼
+                ┌─────────────────────────────┐
+                │ Model Selection & Inference │
+                │    Mohit Kumar Yadav        │
+                │ LinearSVC + TF-IDF          │
+                └──────────────┬──────────────┘
+                               │
+                               ▼
+                  ┌─────────────────────────┐
+                  │ Flask Web Application   │
+                  │      Ishika Garg        │
+                  └────────────┬────────────┘
+                               │
+                               ▼
+                  Predicted News Category
+```
+
+---
 
 ## 5. Project Files
 
-| File | Description |
-|------|-------------|
-| `01_EDA.ipynb` | Exploratory Data Analysis notebook (Member 1) |
-| `02_Text Preprocessing.ipynb` | Initial text-cleaning experiments (Member 2) |
-| `03_Feature_Extraction.ipynb` | Final preprocessing, BoW and TF-IDF vectorizers (Member 2) |
-| `04_Model_Training_Evaluation.ipynb` | Model training, tuning and evaluation (Member 3) |
-| `05_Model_Comparison_Prediction.ipynb` | Model comparison, selection and prediction test (Member 4) |
-| `src/preprocess.py`, `src/predict.py` | Shared preprocessing and the `predict(text)` pipeline |
-| `app/` | Flask web application and frontend (Member 5) |
-| `models/` | Saved best model, TF-IDF vectorizer, label encoder |
-| `reports/` | Evaluation results and charts |
-| `README.md` | Setup, usage and results summary |
-| `PROJECT_REPORT.md` | This report |
+| File / Directory | Description | Primary Responsibility |
+| --- | --- | --- |
+| `01_EDA.ipynb` | Dataset exploration and analysis | Kartiken Sharma |
+| `02_Text Preprocessing.ipynb` | Initial text-cleaning experiments | Huwaid Siddqui |
+| `03_Feature_Extraction.ipynb` | Final preprocessing, BoW and TF-IDF feature extraction | Huwaid Siddqui |
+| `04_Model_Training_Evaluation.ipynb` | Model training and evaluation | Naman Chanana |
+| `05_Model_Comparison_Prediction.ipynb` | Model comparison, final selection and prediction experiments | Mohit Kumar Yadav |
+| `src/preprocess.py` | Shared preprocessing implementation | Shared pipeline |
+| `src/predict.py` | Reusable inference pipeline | Mohit Kumar Yadav |
+| `app/` | Flask backend and frontend application | Ishika Garg |
+| `models/` | Serialized model and feature artifacts | Model/inference pipeline |
+| `reports/` | Evaluation results, plots and confusion matrices | Team evaluation output |
+| `MODEL_CARD.md` | Final model, performance, compatibility and limitations | Project documentation |
+| `README.md` | Repository setup, usage and results overview | Team documentation |
+| `PROJECT_REPORT.md` | Complete project report | Team documentation |
 
-**Final results:** the selected model is a calibrated LinearSVC on TF-IDF (unigram + bigram) features, with 92.36% accuracy and 0.923 weighted F1 on the 7,600-article test set (Logistic Regression 92.00%, Naive Bayes 90.76%, Random Forest 89.89%, Gradient Boosting 89.04%).
+---
 
-## 6. Conclusion
+## 6. Model Comparison and Final Results
 
-The project successfully demonstrates a complete NLP-based news classification pipeline. All five team members contributed their assigned modules collaboratively:
+Seven model/feature configurations were evaluated during the project.
 
-- **Member 1** established a strong analytical foundation through thorough EDA.
-- **Member 2** ensured clean, machine-readable text features.
-- **Member 3** built and rigorously evaluated multiple classifiers.
-- **Member 4** selected the optimal model and packaged it into a prediction system.
-- **Member 5** delivered the user-facing frontend, deployment, and documentation.
+| Model / Configuration | Test Accuracy |
+| --- | ---: |
+| **LinearSVC + TF-IDF** | **92.36%** |
+| Logistic Regression + TF-IDF | 92.00% |
+| Multinomial Naive Bayes + TF-IDF | 90.76% |
+| Logistic Regression + BoW | 90.24% |
+| Naive Bayes + BoW | 90.18% |
+| Random Forest | 89.89% |
+| Histogram-based Gradient Boosting | 89.04% |
 
-The final system takes raw news text as input and accurately predicts its category, showcasing practical application of NLP techniques in real-world content organization.
+The final selected model is a **calibrated LinearSVC using TF-IDF unigram and bigram features**.
 
-*Report generated for team project submission.*
+Final evaluation on the **7,600-article AG News test set**:
+
+- **Accuracy:** 92.36%
+- **Weighted F1-score:** 0.923
+
+The selected model provided the strongest overall classification performance among the evaluated configurations while remaining suitable for fast inference in the web application.
+
+---
+
+## 7. Reproducibility and Model Compatibility
+
+The deployed model and preprocessing artifacts are stored in the `models/` directory and loaded by the reusable inference pipeline.
+
+The serialized scikit-learn artifacts were created using:
+
+```text
+scikit-learn 1.9.1
+```
+
+The corresponding version is pinned in `requirements.txt` to improve compatibility when loading the distributed model artifacts.
+
+The final preprocessing pipeline uses **Porter stemming** and TF-IDF feature extraction. Word2Vec or contextual transformer embeddings are not part of the deployed classification pipeline.
+
+Additional model details, intended use, and limitations are documented in [`MODEL_CARD.md`](MODEL_CARD.md).
+
+---
+
+## 8. Conclusion
+
+The project demonstrates a complete classical NLP workflow for automated news classification, progressing from raw text data to a reusable and user-facing prediction system.
+
+The five-member team contributed across complementary stages of the pipeline:
+
+- **Kartiken Sharma** established the dataset and exploratory-analysis foundation.
+- **Huwaid Siddqui** developed the preprocessing and feature-extraction pipeline.
+- **Naman Chanana** trained and evaluated the candidate machine-learning models.
+- **Mohit Kumar Yadav** compared the models, selected the final configuration, and built the reusable prediction pipeline.
+- **Ishika Garg** integrated the classifier into the web application and organized the final documentation and presentation layer.
+
+The final system uses a calibrated **LinearSVC with TF-IDF features**, achieving **92.36% accuracy** and a **0.923 weighted F1-score** on the 7,600-article AG News test set.
+
+The completed repository therefore demonstrates the full lifecycle of a practical NLP application:
+
+```text
+Data
+  ↓
+EDA
+  ↓
+Preprocessing
+  ↓
+Feature Engineering
+  ↓
+Model Training
+  ↓
+Evaluation & Selection
+  ↓
+Reusable Inference
+  ↓
+Web Application
+```
+
+---
+
+*Prepared as part of the Natural Language Processing team project.*
